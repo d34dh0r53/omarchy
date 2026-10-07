@@ -10,7 +10,7 @@ You start 1Password with `Super + Shift + /`. If it isn't installed yet, that ho
 
 ## Bitwarden
 
-[Bitwarden](https://bitwarden.com/) is the open source alternative in the password manager space, with a free tier that covers most personal use. You start Bitwarden with `Super + Shift + /`. If it isn't installed yet, that hotkey kicks off the installation first (you can also use _Install > Service > Bitwarden_ from the Omarchy menu). The installer brings along the Bitwarden command line tool and sets up the Bitwarden extension for Chromium as well. If you have both 1Password and Bitwarden installed, the hotkey opens 1Password.
+[Bitwarden](https://bitwarden.com/) is the open source alternative in the password manager space, with a free tier that covers most personal use. Install it with _Install > Service > Bitwarden_ from the Omarchy menu, which brings along the Bitwarden command line tool and sets up the Bitwarden extension for Chromium as well. With Bitwarden installed, `Super + Shift + /` opens it as long as 1Password isn't installed; with both present, the hotkey opens 1Password.
 
 ## Spotify
 
