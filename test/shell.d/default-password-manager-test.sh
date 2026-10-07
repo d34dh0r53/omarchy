@@ -104,7 +104,8 @@ omarchy-default-password-manager --install bitwarden
   fail "installing Bitwarden runs its service installer"
 [[ $(query) == "bitwarden" ]] ||
   fail "Bitwarden becomes the default after installation"
-grep -Fqz -e $'-g\0󰟵\0Bitwarden is now the default password manager' "$notification_log" ||
+mapfile -d '' -t notification_args <"$notification_log"
+[[ ${notification_args[*]} == "-g 󰟵 Bitwarden is now the default password manager" ]] ||
   fail "a notification announces the new default"
 pass "installing a missing manager selects it as the default"
 
@@ -117,7 +118,8 @@ omarchy-default-password-manager 1password
   fail "installed manager skips its installer"
 [[ $(query) == "1password" ]] ||
   fail "installed manager becomes the default"
-grep -Fqz -e $'-g\0󰢁\01Password is now the default password manager' "$notification_log" ||
+mapfile -d '' -t notification_args <"$notification_log"
+[[ ${notification_args[*]} == "-g 󰢁 1Password is now the default password manager" ]] ||
   fail "a notification announces the new default"
 pass "choosing an installed manager selects it immediately"
 
@@ -129,6 +131,19 @@ fi
 [[ $(query) == "1password" ]] ||
   fail "failed installation preserves the current default"
 pass "failed installation preserves the current default"
+
+# When the choice cannot be saved, nothing claims otherwise: the command
+# fails before a notification goes out.
+readonly_home="$test_tmp/readonly-home"
+mkdir -p "$readonly_home"
+touch "$readonly_home/.config"
+: >"$notification_log"
+if HOME="$readonly_home" omarchy-default-password-manager 1password 2>/dev/null; then
+  fail "an unsavable default returns an error"
+fi
+[[ ! -s $notification_log ]] ||
+  fail "an unsavable default sends no success notification"
+pass "an unsavable default fails instead of reporting success"
 
 # Anything that is not a known manager is a usage error.
 if omarchy-default-password-manager keepassxc >"$test_tmp/usage-error" 2>&1; then
