@@ -21,7 +21,14 @@ install_chromium_extension() {
 }
 
 echo "Installing Bitwarden..."
-omarchy-pkg-add bitwarden bitwarden-cli
+omarchy-pkg-add bitwarden
+
+echo "Installing Bitwarden CLI..."
+if ! omarchy-pkg-add bitwarden-cli; then
+  echo "Skipping bitwarden-cli (it conflicts with an installed nodejs)."
+  echo "Install it later with: omarchy pkg add bitwarden-cli"
+  echo "The unofficial Rust client rbw avoids the conflict entirely."
+fi
 
 echo "Installing Bitwarden extension for Chromium..."
 install_chromium_extension
