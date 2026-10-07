@@ -27,7 +27,7 @@ echo "Installing Bitwarden extension for Chromium..."
 install_chromium_extension
 
 echo "Opening Bitwarden..."
-setsid uwsm-app -- bitwarden-desktop >/dev/null 2>&1 &
+omarchy-launch-bitwarden
 
 echo ""
 echo "Bitwarden has been installed. Restart Chromium to load the browser extension."
