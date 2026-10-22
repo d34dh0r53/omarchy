@@ -5,7 +5,10 @@ set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
 test_tmp=$(mktemp -d)
-trap 'rm -rf "$test_tmp"' EXIT
+slow_pid_file="$test_tmp/slow-launch-pid"
+# The slow launcher fixture detaches through setsid into its own session, so
+# cleanup stops its whole process group; the fixture is that group's leader.
+trap '[[ -f $slow_pid_file ]] && kill -- "-$(<"$slow_pid_file")" 2>/dev/null || true; rm -rf "$test_tmp"' EXIT
 
 mock_bin="$test_tmp/bin"
 mkdir -p "$mock_bin"
@@ -66,6 +69,9 @@ SH
 
 cat >"$slow_bin/uwsm-app" <<'SH'
 #!/bin/bash
+# The PID lands before the launch line so the exit trap can always stop the
+# fixture once the log it waits for has appeared.
+printf '%s\n' $$ >"$OMARCHY_TEST_SLOW_PID"
 printf 'launch:%s\n' "$*" >"$OMARCHY_TEST_LOG"
 sleep 10
 SH
@@ -74,7 +80,7 @@ chmod +x "$slow_bin"/*
 
 launch_log="$test_tmp/slow-launch-log"
 rc=0
-timeout 2 env PATH="$slow_bin:$PATH" OMARCHY_TEST_LOG="$launch_log" \
+timeout 2 env PATH="$slow_bin:$PATH" OMARCHY_TEST_LOG="$launch_log" OMARCHY_TEST_SLOW_PID="$slow_pid_file" \
   bash "$ROOT/bin/omarchy-launch-bitwarden" || rc=$?
 ((rc == 0)) ||
   fail "Bitwarden launcher returns to a script caller while the app is running" "exit: $rc"
