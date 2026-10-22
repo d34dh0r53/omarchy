@@ -55,6 +55,7 @@ default_file="$test_home/.config/omarchy/defaults/password-manager"
 
 export HOME="$test_home"
 export PATH="$mock_bin:$ROOT/bin:$PATH"
+export OMARCHY_PATH="$ROOT"
 export OMARCHY_TEST_INSTALLED_DIR="$installed_dir"
 export OMARCHY_TEST_INSTALL_LOG="$install_log"
 export OMARCHY_TEST_TERMINAL_LOG="$terminal_log"
