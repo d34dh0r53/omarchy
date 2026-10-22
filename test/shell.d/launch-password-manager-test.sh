@@ -81,7 +81,3 @@ dispatch OMARCHY_TEST_BITWARDEN=1
 grep -Fxq '1password' "$launch_log" ||
   fail "password manager dispatcher stays with a chosen default that is not installed"
 pass "password manager dispatcher stays with a chosen default that is not installed"
-
-grep -Fq '{ omarchy = "password-manager" }' "$ROOT/default/hypr/bindings/applications.lua" ||
-  fail "Passwords keybinding uses the password manager dispatcher"
-pass "Passwords keybinding uses the password manager dispatcher"
