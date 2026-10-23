@@ -123,7 +123,16 @@ run_launcher "$restart_log" OMARCHY_TEST_INSTALLED=true \
   OMARCHY_TEST_BITWARDEN_ALIVE="$alive_marker"
 grep -Fxq 'pkill:-x bitwarden-app' "$restart_log" ||
   fail "Bitwarden launcher restarts a process the handoff cannot recover"
-relaunches=$(grep -Fc 'launch:' "$restart_log" || true)
+# The restart launches detached, so its log line lands a moment after the
+# launcher returns; wait for it rather than racing the count.
+relaunches=0
+for _ in $(seq 100); do
+  relaunches=$(grep -Fc 'launch:' "$restart_log" || true)
+  if (( relaunches >= 2 )); then
+    break
+  fi
+  sleep 0.05
+done
 ((relaunches == 2)) ||
   fail "Bitwarden launcher starts exactly one new instance after the failed handoff" "launches: $relaunches"
 pass "Bitwarden launcher restarts a process the handoff cannot recover"
